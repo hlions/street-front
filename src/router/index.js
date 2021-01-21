@@ -1,30 +1,28 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
-    path: "/",
-    name: "Home",
-    component: Home
-  },
-  {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
-  }
-];
+const routes = [];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+// 路由守卫检测本地是否含有 token, 若没有 token 则跳转到登录界面
+router.beforeEach((to, form, next) => {
+  if (to.path === '/login') {
+    next();
+  } else {
+    const token = localStorage.getItem("token");
+    if (token) {
+      next();
+    } else {
+      router.push('/login');
+    }
+  }
 });
 
 export default router;
